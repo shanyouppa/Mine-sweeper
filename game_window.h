@@ -11,6 +11,5 @@
 void show_init();
 void show_destroy();
 void exit_program();
-void game_start_window();
-void window_main();
+void main_window();
 void game_start_window();

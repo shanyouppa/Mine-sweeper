@@ -1,6 +1,6 @@
 #include "component.h"
 
-using namespace std;
+
 Button::Button(int x, int y, int width, int height, TCHAR* text)
         : x(x), y(y), width(width), height(height), text(text), gap(0) {};
 void Button::LMouse(MOUSEMSG m)

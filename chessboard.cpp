@@ -1,5 +1,5 @@
 #include "chessboard.h"
-using namespace std;
+#include "component.h"
 int ChessBoard::x_tmp = 0;
 int ChessBoard::y_tmp = 0;
 ChessBoard::ChessBoard()
@@ -32,7 +32,7 @@ ChessBoard::ChessBoard()
         }
 
     }
-    cout<<"chessboard construct success!"<<endl;
+    std::cout<<"chessboard construct success!"<<std::endl;
 }
 void ChessBoard::show_line()
 {
@@ -116,7 +116,6 @@ void ChessBoard::show_state() //show chessboard
             }
         }
     }
-    Sleep(10);
     EndBatchDraw();
 }
 int ChessBoard::sweep(int x, int y)
@@ -207,6 +206,11 @@ void ChessBoard::run()
             }
         }
         show_state();
+
+    }
+
+    while(end == -1 || end == 1)
+    {
 
     }
 }

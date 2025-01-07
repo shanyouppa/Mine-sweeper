@@ -17,7 +17,7 @@ void exit_program()
 {
     exit(0);
 }
-void window_main()
+void main_window()
 {
     show_init();
     Buttons butts;
@@ -25,6 +25,7 @@ void window_main()
     butts.setButton(GAP+(COLUMN-1)*(LINE_WIDTH*GRID_SIZE), GAP+(ROW-1)*(LINE_WIDTH+GRID_SIZE), 80, 40, _T("exit"));
     butts.buttons[0].setfunback(game_start_window);
     butts.buttons[1].setfunback(exit_program);
+    butts.draw({0, false, false, false}); //绘制初始按钮，传入无效m
     while(1)
     {
         MOUSEMSG m = GetMouseMsg();
