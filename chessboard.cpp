@@ -1,12 +1,13 @@
 #include "chessboard.h"
 #include "component.h"
+#include "game_window.h"
 int ChessBoard::x_tmp = 0;
 int ChessBoard::y_tmp = 0;
 ChessBoard::ChessBoard()
 {
     find = 0;
     int site;
-    srand(time(NULL));
+    srand(time(nullptr));
     for(int i=0;i<BOOM; )
     {
         site = rand()%(ROW*COLUMN);
@@ -32,7 +33,7 @@ ChessBoard::ChessBoard()
         }
 
     }
-    std::cout<<"chessboard construct success!"<<std::endl;
+    logger.out("chessboard construct success!");
 }
 void ChessBoard::show_line()
 {
@@ -51,8 +52,6 @@ void ChessBoard::show_line()
 }
 void ChessBoard::show_state() //show chessboard
 {
-    BeginBatchDraw();  //双缓冲
-    cleardevice();
     show_line();
     for(int x = 0;x<ROW;x++)
     {
@@ -104,35 +103,39 @@ void ChessBoard::show_state() //show chessboard
             }
             if(end == -1)
             {
-                TCHAR* over = _T("GAME OVER");
+                const TCHAR* over = _T("GAME OVER");
                 settextcolor(RED);
                 outtextxy(GAP+ COLUMN*(LINE_WIDTH+ GRID_SIZE)/2- textwidth(over)/2, GRID_SIZE/2, over);
             }
             else if(end == 1)
             {
-                TCHAR* win = _T("YOU WIN");
+                const TCHAR* win = _T("YOU WIN");
                 settextcolor(YELLOW);
                 outtextxy(GAP+ COLUMN*(LINE_WIDTH+ GRID_SIZE)/2- textwidth(win)/2, GRID_SIZE/2, win);
             }
         }
     }
-    EndBatchDraw();
 }
-int ChessBoard::sweep(int x, int y)
+void ChessBoard::sweep(int x, int y)
 {
-    int im_x = GAP+LINE_WIDTH+y*(GRID_SIZE+LINE_WIDTH);
-    int im_y = GAP+LINE_WIDTH+x*(GRID_SIZE+LINE_WIDTH);
+    if(board[x][y].state == 1) //重复点击无效
+    {
+        return;
+    }
     board[x][y].state = 1;
     if(board[x][y].is_boom == 1)   //判断输赢
     {
         end = -1;
+        logger.out("SWEEP_END: ("+std::to_string(x)+ ", "+std::to_string(y)+"), date: "+ log_message());
     }
     else if(board[x][y].is_boom == 0)
     {
         find++;
+        logger.out("SWEEP: ("+std::to_string(x)+ ", "+std::to_string(y)+"), date: "+ log_message());
         if(find == ROW*COLUMN-BOOM)
         {
             end = 1;
+            logger.out("SWEEP_END: ("+std::to_string(x)+ ", "+std::to_string(y)+"), date: "+ log_message());
         }
 
     }
@@ -159,7 +162,6 @@ int ChessBoard::sweep(int x, int y)
             }
         }
     }
-    return 0;
 }
 void ChessBoard::mouse_over(int x, int y)
 {
@@ -177,6 +179,7 @@ void ChessBoard::reset_mouse_over()
 }
 void ChessBoard::run()
 {
+    logger.out("game running......");
     while(end == 0)
     {
         if(MouseHit())
@@ -188,6 +191,7 @@ void ChessBoard::run()
                 int y = (m.x-GAP)/(LINE_WIDTH+GRID_SIZE);
                 if(m.uMsg == WM_LBUTTONDOWN)
                 {
+                    logger.out("SWEEP: ("+std::to_string(x)+ ", "+std::to_string(y)+ ")");
                     sweep(x, y);
                 }
                 else if(m.uMsg == WM_RBUTTONDOWN)
@@ -205,12 +209,32 @@ void ChessBoard::run()
                 reset_mouse_over();  //mouse移出边界时初始化tmp mouse_over
             }
         }
+        BeginBatchDraw();
+        cleardevice();
         show_state();
+        EndBatchDraw();
 
     }
-
-    while(end == -1 || end == 1)
+    if(end == -1 || end == 1)
     {
+        Buttons butt;
+        butt.setButton(GAP, GAP+(ROW-1)*(LINE_WIDTH+GRID_SIZE), 80, 40, RED, _T("restart"));
+        butt.setButton(GAP+(COLUMN-1)*(LINE_WIDTH*GRID_SIZE), GAP+(ROW-1)*(LINE_WIDTH+GRID_SIZE), 80, 40, RGB(128, 128, 128), _T("exit"));
+        butt.buttons[0].setFun_back(game_start_window, "click button: [restart] -> game_start_window");
+        butt.buttons[1].setFun_back(main_window, "click button: [exit] -> main_window");
+        while(end == -1 || end == 1)
+        {
+            MOUSEMSG m = GetMouseMsg();
+            BeginBatchDraw();
+            cleardevice();
+            show_state();
+            butt.draw(m);
+            EndBatchDraw();
 
+        }
     }
+}
+std::string ChessBoard::log_message()
+{
+    return "{end: "+std::to_string(end)+", find: "+ std::to_string(find)+ "}";
 }

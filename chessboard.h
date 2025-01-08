@@ -3,6 +3,8 @@
 #include<graphics.h>
 #include<iostream>
 #include<list>
+#include <functional>
+#include<string>
 
 #define ROW 8
 #define COLUMN 10
@@ -10,6 +12,7 @@
 #define GRID_SIZE 40
 #define GAP 120
 #define LINE_WIDTH 1
+
 class Cell
 {
 public:
@@ -30,10 +33,12 @@ private:
     static int y_tmp;
 public:
     ChessBoard();
-    void show_line();
+    static void show_line();
     void show_state();
-    int sweep(int x, int y);
+    void sweep(int x, int y);
     void mouse_over(int x, int y);
     void reset_mouse_over();
     void run();
+    std::string log_message();
+
 };
