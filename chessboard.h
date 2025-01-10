@@ -8,10 +8,13 @@
 
 #define ROW 8
 #define COLUMN 10
-#define BOOM 6
+#define BOOM 2
 #define GRID_SIZE 40
 #define GAP 120
 #define LINE_WIDTH 1
+
+extern int MAIN;
+extern int GAME_START;
 
 class Cell
 {
@@ -31,14 +34,20 @@ private:
     int end = 0; //-1->输 0->进行中 1->赢
     static int x_tmp;
     static int y_tmp;
+    bool CountTime = false; //F->计时器关闭 T->开启
+    clock_t start_time;
+    clock_t end_time;
 public:
     ChessBoard();
+    ~ChessBoard();
     static void show_line();
     void show_state();
     void sweep(int x, int y);
     void mouse_over(int x, int y);
     void reset_mouse_over();
     void run();
-    std::string log_message();
+    void reset_end(); //reset end = 0 for reset game
+    std::string EndFind_message() const;
+    std::string Boom_message() const;
 
 };

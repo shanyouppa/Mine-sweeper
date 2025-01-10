@@ -6,13 +6,13 @@ int ChessBoard::y_tmp = 0;
 ChessBoard::ChessBoard()
 {
     find = 0;
-    int site;
-    srand(time(nullptr));
+    std::mt19937 gen(std::random_device{}());
+    std::uniform_int_distribution<> dis_x(0, ROW-1);
+    std::uniform_int_distribution<> dis_y(0, COLUMN-1);
     for(int i=0;i<BOOM; )
     {
-        site = rand()%(ROW*COLUMN);
-        int x = site/ROW;
-        int y = site%COLUMN;
+        int x = dis_x(gen);
+        int y = dis_y(gen);
         if(board[x][y].is_boom == 0)
         {
             board[x][y].is_boom = 1;  //设置boom
@@ -31,9 +31,17 @@ ChessBoard::ChessBoard()
                 }
             }
         }
-
     }
-    logger.out("chessboard construct success!");
+    logger.out("chessboard construct success......");
+}
+ChessBoard::~ChessBoard()
+{
+    find = 0;   //游戏结束重置所有数据
+    end = 0;
+    CountTime = false;
+    start_time = 0;
+    end_time = 0;
+    logger.out("chessboard distruct success......");
 }
 void ChessBoard::show_line()
 {
@@ -85,13 +93,10 @@ void ChessBoard::show_state() //show chessboard
                     solidrectangle(im_x, im_y, im_x+GRID_SIZE-1, im_y+GRID_SIZE-1);
                     if(board[x][y].other_boom != 0)
                     {
-                        char text = '0' + board[x][y].other_boom;
-                        if(board[x][y].other_boom != 0)
-                        {
-                            char text = '0' + board[x][y].other_boom;
-                            settextcolor(BLUE);
-                            outtextxy(im_x+GRID_SIZE/2, im_y+GRID_SIZE/2, text);
-                        }   outtextxy(im_x+GRID_SIZE/2, im_y+GRID_SIZE/2, text);
+                        char text = static_cast<char>('0' + board[x][y].other_boom);
+                        settextcolor(BLUE);
+                        outtextxy(im_x+GRID_SIZE/2, im_y+GRID_SIZE/2, text);
+                        outtextxy(im_x+GRID_SIZE/2, im_y+GRID_SIZE/2, text);
                     }
                 }
                 else if(board[x][y].is_boom == 1)
@@ -99,22 +104,25 @@ void ChessBoard::show_state() //show chessboard
                     setfillcolor(BLACK);
                     solidcircle(im_x+GRID_SIZE/2, im_y+GRID_SIZE/2, 20);
                 }
-
-            }
-            if(end == -1)
-            {
-                const TCHAR* over = _T("GAME OVER");
-                settextcolor(RED);
-                outtextxy(GAP+ COLUMN*(LINE_WIDTH+ GRID_SIZE)/2- textwidth(over)/2, GRID_SIZE/2, over);
-            }
-            else if(end == 1)
-            {
-                const TCHAR* win = _T("YOU WIN");
-                settextcolor(YELLOW);
-                outtextxy(GAP+ COLUMN*(LINE_WIDTH+ GRID_SIZE)/2- textwidth(win)/2, GRID_SIZE/2, win);
             }
         }
     }
+    if(end == -1)
+    {
+        LPCTSTR over = _T("GAME OVER");
+        settextcolor(RED);
+        outtextxy(GAP+ COLUMN*(LINE_WIDTH+ GRID_SIZE)/2- textwidth(over)/2, GRID_SIZE/2, over);
+    }
+    else if(end == 1)
+    {
+        LPCTSTR win = _T("YOU WIN");
+        settextcolor(YELLOW);
+        outtextxy(GAP+ COLUMN*(LINE_WIDTH+ GRID_SIZE)/2- textwidth(win)/2, GRID_SIZE/2, win);
+    }
+    settextcolor(BLACK);  //绘制游戏时间
+    int int_time = static_cast<int>(end_time - start_time)/CLOCKS_PER_SEC;
+    std::string str_time = std::to_string(int_time) + " s";
+    outtextxy(20, 20, str_time.c_str());
 }
 void ChessBoard::sweep(int x, int y)
 {
@@ -123,21 +131,23 @@ void ChessBoard::sweep(int x, int y)
         return;
     }
     board[x][y].state = 1;
-    if(board[x][y].is_boom == 1)   //判断输赢
+    if(board[x][y].is_boom == 1)   //输了
     {
         end = -1;
-        logger.out("SWEEP_END: ("+std::to_string(x)+ ", "+std::to_string(y)+"), date: "+ log_message());
+        CountTime = false;
+        logger.out("SWEEP_END: (" + std::to_string(x) + ", " + std::to_string(y) + "), date: " + EndFind_message());
     }
     else if(board[x][y].is_boom == 0)
     {
         find++;
-        logger.out("SWEEP: ("+std::to_string(x)+ ", "+std::to_string(y)+"), date: "+ log_message());
-        if(find == ROW*COLUMN-BOOM)
-        {
-            end = 1;
-            logger.out("SWEEP_END: ("+std::to_string(x)+ ", "+std::to_string(y)+"), date: "+ log_message());
-        }
-
+        logger.out("SWEEP: (" + std::to_string(x) + ", " + std::to_string(y) + "), date: " + EndFind_message());
+    }
+    if(find == ROW*COLUMN-BOOM)  //赢了
+    {
+        end = 1;
+        CountTime = false;
+        logger.out("SWEEP_END: (" + std::to_string(x) + ", " + std::to_string(y) + "), date: " + EndFind_message());
+        return;
     }
     if(board[x][y].other_boom == 0)  //周围没有boom，遍历周围
     {
@@ -180,34 +190,40 @@ void ChessBoard::reset_mouse_over()
 void ChessBoard::run()
 {
     logger.out("game running......");
-    while(end == 0)
+    while(end == 0 && GAME_START == 1)
     {
-        if(MouseHit())
+        MOUSEMSG m = GetMouseMsg();
+        if(m.x>=GAP+LINE_WIDTH && m.x<GAP+COLUMN*(LINE_WIDTH+GRID_SIZE) && m.y>=GAP+LINE_WIDTH && m.y<GAP+ROW*(LINE_WIDTH+GRID_SIZE))
         {
-            MOUSEMSG m = GetMouseMsg();
-            if(m.x>=GAP+LINE_WIDTH && m.x<GAP+COLUMN*(LINE_WIDTH+GRID_SIZE) && m.y>=GAP+LINE_WIDTH && m.y<GAP+ROW*(LINE_WIDTH+GRID_SIZE))
+            int x = (m.y-GAP)/(LINE_WIDTH+GRID_SIZE);
+            int y = (m.x-GAP)/(LINE_WIDTH+GRID_SIZE);
+            if(m.uMsg == WM_LBUTTONDOWN)
             {
-                int x = (m.y-GAP)/(LINE_WIDTH+GRID_SIZE);
-                int y = (m.x-GAP)/(LINE_WIDTH+GRID_SIZE);
-                if(m.uMsg == WM_LBUTTONDOWN)
+                logger.out("SWEEP: ("+std::to_string(x)+ ", "+std::to_string(y)+ ")");
+                if(CountTime == false)  //第一次sweep， 计时器开启时间
                 {
-                    logger.out("SWEEP: ("+std::to_string(x)+ ", "+std::to_string(y)+ ")");
-                    sweep(x, y);
+                    start_time = clock();
+                    end_time = start_time;
+                    CountTime = true;
                 }
-                else if(m.uMsg == WM_RBUTTONDOWN)
-                {
-                    board[x][y].flag = !board[x][y].flag;
-                }
-                else if(m.uMsg == WM_MOUSEMOVE)
-                {
-                    mouse_over(x, y);  //更新mouse_over以及tmp
-                }
-
+                sweep(x, y);
             }
-            else
+            else if(m.uMsg == WM_RBUTTONDOWN)
             {
-                reset_mouse_over();  //mouse移出边界时初始化tmp mouse_over
+                board[x][y].flag = !board[x][y].flag;
             }
+            else if(m.uMsg == WM_MOUSEMOVE)
+            {
+                mouse_over(x, y);  //更新mouse_over以及tmp
+            }
+        }
+        else
+        {
+            reset_mouse_over();  //mouse移出边界时初始化tmp mouse_over
+        }
+        if(CountTime == TRUE)   //更新结束时间
+        {
+            end_time = clock();
         }
         BeginBatchDraw();
         cleardevice();
@@ -215,14 +231,14 @@ void ChessBoard::run()
         EndBatchDraw();
 
     }
-    if(end == -1 || end == 1)
+    if((end == -1 || end == 1) && GAME_START == 1)
     {
         Buttons butt;
-        butt.setButton(GAP, GAP+(ROW-1)*(LINE_WIDTH+GRID_SIZE), 80, 40, RED, _T("restart"));
-        butt.setButton(GAP+(COLUMN-1)*(LINE_WIDTH*GRID_SIZE), GAP+(ROW-1)*(LINE_WIDTH+GRID_SIZE), 80, 40, RGB(128, 128, 128), _T("exit"));
-        butt.buttons[0].setFun_back(game_start_window, "click button: [restart] -> game_start_window");
-        butt.buttons[1].setFun_back(main_window, "click button: [exit] -> main_window");
-        while(end == -1 || end == 1)
+        butt.setButton(GAP, GAP+ROW*(LINE_WIDTH+GRID_SIZE)+GRID_SIZE/2, 80, 40, RED, _T("restart")); //设置GRID_SIZE为按钮与网格线间隙
+        butt.setButton(GAP+(COLUMN-1)*(LINE_WIDTH*GRID_SIZE), GAP+ROW*(LINE_WIDTH+GRID_SIZE)+GRID_SIZE/2, 80, 40, RGB(70, 120, 120), _T("exit"));
+        butt.buttons[0].setFun_back([this](){this->reset_end();}, "click button: [restart] -> game_start_window");
+        butt.buttons[1].setFun_back(main_window_button, "click button: [exit] -> main_window");
+        while((end == -1 || end == 1) && GAME_START == 1)
         {
             MOUSEMSG m = GetMouseMsg();
             BeginBatchDraw();
@@ -234,7 +250,34 @@ void ChessBoard::run()
         }
     }
 }
-std::string ChessBoard::log_message()
+void ChessBoard::reset_end()
+{
+    end = 0;
+}
+std::string ChessBoard::EndFind_message() const
 {
     return "{end: "+std::to_string(end)+", find: "+ std::to_string(find)+ "}";
+}
+std::string ChessBoard::Boom_message() const
+{
+    std::string text;
+    text += "\nstate: Boom:\n";
+    for(const auto & i : board)
+    {
+        for(const auto & j : i)
+        {
+            text += (std::to_string(j.is_boom) + "  ");
+        }
+        text += "\n";
+    }
+    text += "state: other_boom:\n";
+    for(const auto & i : board)
+    {
+        for(const auto & j : i)
+        {
+            text += (std::to_string(j.other_boom) + "  ");
+        }
+        text += "\n";
+    }
+    return text;
 }

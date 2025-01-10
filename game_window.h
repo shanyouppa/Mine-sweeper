@@ -3,14 +3,19 @@
 #include "log.h"
 #define ROW 8
 #define COLUMN 10
-#define BOOM 6
+#define BOOM 2
 #define GRID_SIZE 40
 #define GAP 120
 #define LINE_WIDTH 1
+
+extern int MAIN;
+extern int GAME_START;
 
 void show_init();
 void show_destroy();
 void exit_program();
 void main_window();
 void game_start_window();
+void main_window_button();
+void game_start_window_button();
 
