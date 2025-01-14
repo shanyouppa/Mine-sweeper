@@ -1,9 +1,9 @@
 #include<conio.h>
 #include <graphics.h>
 #include "log.h"
-#define ROW 8
-#define COLUMN 10
-#define BOOM 2
+extern int ROW;
+extern int COLUMN;
+#define BOOM 6
 #define GRID_SIZE 40
 #define GAP 120
 #define LINE_WIDTH 1

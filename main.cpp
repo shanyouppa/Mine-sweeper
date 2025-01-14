@@ -1,16 +1,18 @@
 #include "game_window.h"
 int MAIN = 1;
 int GAME_START = 0;
+int ROW = 8;
+int COLUMN = 10;
 Log logger;
 int main()
 {
     while(true)
     {
-        if(MAIN == 1)
+        if(MAIN)
         {
             main_window();
         }
-        else if(GAME_START == 1)
+        else if(GAME_START)
         {
             game_start_window();
         }

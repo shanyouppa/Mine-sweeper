@@ -5,10 +5,13 @@
 #include<list>
 #include <functional>
 #include<string>
+#include<vector>
 
-#define ROW 8
-#define COLUMN 10
-#define BOOM 2
+extern int ROW;
+extern int COLUMN;
+
+
+#define BOOM 6
 #define GRID_SIZE 40
 #define GAP 120
 #define LINE_WIDTH 1
@@ -30,13 +33,14 @@ class ChessBoard
 private:
     const std::list<int> dxdy = {-1, 0, 1};
     int find = 0; //已探索数目
-    Cell board[ROW][COLUMN] = {0};  //is_boom site offset
+    std::vector<std::vector<Cell>> board;  //is_boom site offset
     int end = 0; //-1->输 0->进行中 1->赢
+    int flag_count = 0;
     static int x_tmp;
     static int y_tmp;
     bool CountTime = false; //F->计时器关闭 T->开启
-    clock_t start_time;
-    clock_t end_time;
+    clock_t start_time = 0;
+    clock_t end_time = 0;
 public:
     ChessBoard();
     ~ChessBoard();

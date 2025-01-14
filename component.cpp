@@ -1,7 +1,5 @@
 #include "component.h"
 
-#include <utility>
-
 Button::Button(int x, int y, int width, int height, int color, LPCTSTR text)
         : x(x), y(y), width(width), height(height), color(color), text(text), gap(0) {};
 void Button::setFun_back(function<void()> fun, std::string message)
@@ -23,12 +21,12 @@ void Button::draw(MOUSEMSG m) {
     solidrectangle(x+ gap, y+ gap, x+ width- gap, y+ height- gap);
     setbkmode(TRANSPARENT);
     settextcolor(BLACK);
+    settextstyle(16, 0, _T(""), 0, 0, 1600, false, false, false);
     outtextxy(x+ width/2- textwidth(text)/2, y+ height/2- textheight(text)/2, text); //居中显示文本
 }
 void Buttons::setButton(int x, int y, int width, int height, int color, LPCTSTR text) {
     buttons.emplace_back(x, y, width, height, color, text);
 }
-
 void Buttons::draw(MOUSEMSG m) {
     for (Button& b : buttons) {
         b.draw(m);
