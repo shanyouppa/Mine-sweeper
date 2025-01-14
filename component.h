@@ -30,4 +30,5 @@ public:
     vector<Button> buttons;
     void setButton(int x, int y, int width, int height, int color, LPCTSTR text);
     void draw(MOUSEMSG m);
+    void trigger(MOUSEMSG m);
 };

@@ -27,9 +27,17 @@ void Button::draw(MOUSEMSG m) {
 void Buttons::setButton(int x, int y, int width, int height, int color, LPCTSTR text) {
     buttons.emplace_back(x, y, width, height, color, text);
 }
-void Buttons::draw(MOUSEMSG m) {
-    for (Button& b : buttons) {
+void Buttons::draw(MOUSEMSG m)
+{
+    for(Button& b : buttons)
+    {
         b.draw(m);
+    }
+}
+void Buttons::trigger(MOUSEMSG m)
+{
+    for(Button& b : buttons)
+    {
         b.LMouse(m);
     }
 }

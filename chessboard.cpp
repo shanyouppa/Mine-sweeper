@@ -261,19 +261,20 @@ void ChessBoard::run()
     }
     if((end == -1 || end == 1) && GAME_START == 1)
     {
-        Buttons butt;
-        butt.setButton(GAP, GAP+ROW*(LINE_WIDTH+GRID_SIZE)+GRID_SIZE/2, 80, 40, RED, _T("restart")); //设置GRID_SIZE为按钮与网格线间隙
-        butt.setButton(GAP+(COLUMN-1)*(LINE_WIDTH*GRID_SIZE), GAP+ROW*(LINE_WIDTH+GRID_SIZE)+GRID_SIZE/2, 80, 40, RGB(70, 120, 120), _T("exit"));
-        butt.buttons[0].setFun_back([this](){this->reset_end();}, "click button: [restart] -> game_start_window");
-        butt.buttons[1].setFun_back(main_window_button, "click button: [exit] -> main_window");
+        Buttons butts;
+        butts.setButton(GAP, GAP + ROW * (LINE_WIDTH + GRID_SIZE) + GRID_SIZE / 2, 80, 40, RED, _T("restart")); //设置GRID_SIZE为按钮与网格线间隙
+        butts.setButton(GAP + (COLUMN - 1) * (LINE_WIDTH * GRID_SIZE), GAP + ROW * (LINE_WIDTH + GRID_SIZE) + GRID_SIZE / 2, 80, 40, RGB(70, 120, 120), _T("exit"));
+        butts.buttons[0].setFun_back([this](){this->reset_end();}, "click button: [restart] -> game_start_window");
+        butts.buttons[1].setFun_back(main_window_button, "click button: [exit] -> main_window");
         while((end == -1 || end == 1) && GAME_START == 1)
         {
             MOUSEMSG m = GetMouseMsg();
             BeginBatchDraw();
             cleardevice();
             show_state();
-            butt.draw(m);
+            butts.draw(m);
             EndBatchDraw();
+            butts.trigger(m);  //置于双缓冲外面，防止闪屏
 
         }
     }

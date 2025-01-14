@@ -39,6 +39,7 @@ void main_window()
             BeginBatchDraw();
             cleardevice();
             butts.draw(m);
+            butts.trigger(m);
             EndBatchDraw();
         }
     }
