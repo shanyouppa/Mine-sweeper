@@ -86,7 +86,7 @@ void ChessBoard::show_state() //show chessboard
                 if(board[x][y].flag == 1)
                 {
                     setfillcolor(RED);
-                    solidcircle(im_x+ GRID_SIZE/2, im_y+ GRID_SIZE/2, 10);
+                    solidcircle(im_x+ GRID_SIZE/2, im_y+ GRID_SIZE/2, GRID_SIZE/4);
                 }
             }
             else if(board[x][y].state == 1)
@@ -106,7 +106,7 @@ void ChessBoard::show_state() //show chessboard
                 else if(board[x][y].is_boom == 1)
                 {
                     setfillcolor(BLACK);
-                    solidcircle(im_x+GRID_SIZE/2, im_y+GRID_SIZE/2, 20);
+                    solidcircle(im_x+GRID_SIZE/2, im_y+GRID_SIZE/2, GRID_SIZE/2);
                 }
             }
         }

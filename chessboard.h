@@ -9,12 +9,11 @@
 
 extern int ROW;
 extern int COLUMN;
+extern int BOOM;
 
-
-#define BOOM 6
-#define GRID_SIZE 40
-#define GAP 120
-#define LINE_WIDTH 1
+extern int GRID_SIZE;
+extern int GAP;
+extern int LINE_WIDTH;
 
 extern int MAIN;
 extern int GAME_START;

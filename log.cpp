@@ -1,9 +1,15 @@
 #include "log.h"
+#include<fstream>
+#include <filesystem>
 
 
 Log::Log()
 {
-    file.open("log.txt", std::ios::app);
+    if(!std::filesystem::exists("./game_date"))
+    {
+        std::filesystem::create_directory("./game_date");
+    }
+    file.open(logfilename, std::ios::app);
     if(!file.is_open())
     {
         std::cerr<<"cannot open log.txt"<<std::endl;

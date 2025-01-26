@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <synchapi.h>
 
+extern std::string logfilename;
+
 class Log
 {
 private:
