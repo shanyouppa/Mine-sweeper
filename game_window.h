@@ -17,8 +17,8 @@ void show_clear();
 void exit_program();
 void main_window();
 void game_start_window();
+void setting_window();
 void main_window_button();
 void game_start_window_button();
 void setting_window_button();
-void setting_window();
 

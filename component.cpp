@@ -1,5 +1,7 @@
 #include "component.h"
 
+#include <utility>
+
 Button::Button(int x, int y, int width, int height, int color, LPCTSTR text)
         : x(x), y(y), width(width), height(height), color(color), text(text), gap(0) {};
 void Button::setFun_back(function<void()> fun, std::string message)
@@ -56,14 +58,14 @@ void TextBox::draw()
     setcolor(BLACK);
     rectangle(left, top, right, bottom);
     settextcolor(BLACK);
-    settextstyle(20, 20, _T("宋体"));
-    outtextxy(left + 20, (top+bottom)/2-20/2, text.c_str());  //输入框数据
-    outtextxy(left -gap, (top+bottom)/2-20/2, title);     //输入框左标题
+    settextstyle(bottom-top-10, 14, _T("宋体"));
+    outtextxy(left + 20, (2*top+10)/2, text.c_str());  //输入框数据,间隔20       //(2*top+10)/2 = (bottom+top)/2-(bottom-top-10)/2 = 输入框中心-半个字体高度
+    outtextxy(left -10* textwidth('A'), (2*top+10)/2, title);     //输入框左标题
     if(sw)
     {
         setcolor(BLACK);
-        int cursor_x = left+20+cursor_pos* textwidth(text[0]);
-        line(cursor_x, (top+bottom)/2-20/2, cursor_x, (top+bottom)/2+20/2);
+        int cursor_x = left+20+cursor_pos* textwidth('A');
+        line(cursor_x, (2*top+10)/2, cursor_x, (2*bottom-10)/2);   //画输入位置黑线
     }
 }
 int TextBox::select(MOUSEMSG m)
@@ -71,13 +73,17 @@ int TextBox::select(MOUSEMSG m)
 
     if(m.x>=left && m.x<=right && m.y>=top && m.y<=bottom && m.uMsg == WM_LBUTTONDOWN)
     {
-        cursor_pos = (m.x-left-10)/20<=text.size()? (m.x-left-10)/20: static_cast<int>(text.size()); //具体光标位置
-        return 1;
+        cursor_pos = (m.x-left-20+7)/14<=text.size()? (m.x-left-20+7)/14: static_cast<int>(text.size()); //具体光标位置
+        return 1;    //黑线位置会对不上
     }
     else
     {
         return 0;
     }
+}
+void TextBox::init_text(int num)
+{
+    text = std::to_string(num);
 }
 void TextBoxs::set_TextBox(int left, int top, int right, int bottom, int gap, LPCTSTR title)
 {

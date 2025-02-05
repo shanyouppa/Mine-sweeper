@@ -18,12 +18,10 @@ int ROW;
 int COLUMN;
 int BOOM;
 Log logger;
-
 // 创建默认 JSON 文件
-
-
 int main() {
     readMyJson();
+    logger.out("read jsonfile");
     show_init();
     while (true) {
         if (MAIN) {

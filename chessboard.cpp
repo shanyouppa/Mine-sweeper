@@ -262,8 +262,8 @@ void ChessBoard::run()
     if((end == -1 || end == 1) && GAME_START == 1)
     {
         Buttons butts;
-        butts.setButton(GAP, GAP + ROW * (LINE_WIDTH + GRID_SIZE) + GRID_SIZE / 2, 80, 40, RED, _T("restart")); //设置GRID_SIZE为按钮与网格线间隙
-        butts.setButton(GAP + (COLUMN - 1) * (LINE_WIDTH * GRID_SIZE), GAP + ROW * (LINE_WIDTH + GRID_SIZE) + GRID_SIZE / 2, 80, 40, RGB(70, 120, 120), _T("exit"));
+        butts.setButton(GAP/2, GAP + (ROW+1) * (LINE_WIDTH + GRID_SIZE), 80, 40, RED, _T("restart")); //设置GRID_SIZE为按钮与网格线间隙
+        butts.setButton(GAP + COLUMN * (LINE_WIDTH * GRID_SIZE)+GAP/2-80, GAP + (ROW+1) * (LINE_WIDTH + GRID_SIZE), 80, 40, RGB(70, 120, 120), _T("exit"));
         butts.buttons[0].setFun_back([this](){this->reset_end();}, "click button: [restart] -> game_start_window");
         butts.buttons[1].setFun_back(main_window_button, "click button: [exit] -> main_window");
         while((end == -1 || end == 1) && GAME_START == 1)

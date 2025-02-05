@@ -53,7 +53,7 @@ private:
     int top;
     int right;
     int bottom;
-    int gap;
+    int gap;   //方框与左标题之间距离
     LPCTSTR title;  //左标题
     int cursor_pos = 0;
     bool sw = false;
@@ -62,6 +62,7 @@ public:
     int text_is_empty();
     void draw();
     int select(MOUSEMSG m);
+    void init_text(int num);
     friend class TextBoxs;
 };
 class TextBoxs
