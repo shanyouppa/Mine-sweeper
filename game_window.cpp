@@ -107,7 +107,7 @@ void setting_window()
             {
                 MOUSEMSG m = GetMouseMsg();
                 ts.trigger(m);
-                if(!ts.textboxs[0].text_is_empty() && !ts.textboxs[1].text_is_empty() &&ts.textboxs[2].text_is_empty())
+                if(!ts.textboxs[0].text_is_empty() && !ts.textboxs[1].text_is_empty() &&!ts.textboxs[2].text_is_empty())
                 {
                     bs.buttons[0].LMouse(m);
                 }
